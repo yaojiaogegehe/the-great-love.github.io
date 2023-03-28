@@ -2,7 +2,7 @@
 
 csrf与xss的区别在于：xss是盗取用户cookie值然后登录网页进行破坏，攻击者算是盗取到了用户的权限；csrf是借用用户的权限进行攻击，攻击者没有盗取到用户的权限。
 
-<img src="hw/jpg/1.png" width="20%" height="20%"/>
+<img src="[main/hw/jpg/1.png]" width="20%" height="20%"/>
 
 防止csrf攻击：
 
