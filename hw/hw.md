@@ -302,6 +302,8 @@ war后门文件部署：如果后台管理页面存在弱口令，可以通过�
 
 现在是base64流量加密，流量大，可用base64解码
 
+shell 特征就是传输参数名为 z0，还存在int_set("display_erros","0")字符串特征
+
 
 
 ### 蚁剑
@@ -322,7 +324,15 @@ asp OnError ResumeNext，response
 
 ### 冰蝎
 
-通过AES对称加密
+#### 2.0
+
+通过AES对称加密发起三次请求，第一次请求服务端产生密钥写入 session，session 和当前会话绑定，不同的客户端的密钥也是不同的；第二次请求是为了获取 key；第三次使用 key 的 aes 加密进行通信
+
+#### 3.0
+
+使用 aes 加密发起两次请求
+
+3.0 分析流量发现相比 2.0 少了动态密钥的获取的请求，不再使用随机生成 key，改为用连接密码 md5 加密后的前 16 位值作为密钥
 
 冰蝎数据包总是伴随着大量的content-type：application什么什么，无论GET还是POST，请求的http中，content-type为application/octet-stream；
 
@@ -332,6 +342,6 @@ content-length 请求长度，对于密钥交互，获取基本信息来讲，pa
 
 ### 哥斯拉
 
-base64加密
+采用了和冰蝎 3.0 一样的密钥交换方式，哥斯拉建立连接时会发起三次请求，第一次请求数据超级长，建立 session，第二三次请求确认连接
 
 jsp文件里有"pass="，而且发起连接时服务器返回的Content-Length是0
