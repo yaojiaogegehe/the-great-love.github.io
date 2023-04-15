@@ -79,6 +79,8 @@ sqlmap -u "http://xxx/Less-1/?id=1" --tamper="space2comment.py,space2plus.py"
 
 sqlmap一共有5个探测等级，默认是1。等级越高，说明探测时使用的payload也越多。其中5级的payload最多，会自动破解出cookie、XFF等头部注入。当然，等级越高，探测的时间也越慢。这个参数会影响测试的注入点，GET和POST的数据都会进行测试，HTTP cookie在level为2时就会测试，HTTP User-Agent/Referer头在level为3时就会测试。在不确定哪个参数为注入点时，为了保证准确性，建议设置level为5
 
+危险等级：此参数用于指定风险等级，有1~3共3级。默认风险等级为1,此等级在大多数情况下对测试目标无害。 风险等级2添加了基于时间的注入测试,等级3添加了OR测试
+
 ## 执行操作系统命令(—os-shell)
 
 在数据库为MySQL、PostgreSql或者SQL Server时，可以通过sqlmap执行操作系统命令
