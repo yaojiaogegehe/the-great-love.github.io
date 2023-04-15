@@ -61,7 +61,7 @@ sqlmap -u "http://xxx/sqli/Less-11/?id=1" --data="uname=admin&passwd=admin&submi
 
 有些时候网站会过滤掉各种字符，可以用tamper来解决（对付某些waf时也有成效）
 
-sqlmap 官方提供了53个绕过脚本，脚本目录在`/usr/share/sqlmap/tamper`中
+sqlmap 官方提供了70个绕过脚本（不是53个，我的版本是1.7.3.4），脚本目录在`/usr/share/sqlmap/tamper`中
 
 指定单个脚本进行绕过：
 
