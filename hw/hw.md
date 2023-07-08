@@ -413,6 +413,8 @@ asp OnError ResumeNext，response
 
 蚁剑混淆加密后还有一个比较明显的特征，就是参数名大多以“_0x.....=”这种形式，所以，以_0x开头的参数名，后面为加密数据的数据包也可识别为蚁剑的流量特征
 ```
+默认的user-agent头是antsword xxx，但可以修改
+
 
 
 
