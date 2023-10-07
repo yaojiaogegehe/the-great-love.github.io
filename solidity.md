@@ -940,6 +940,155 @@ contract FunctionTest{
 
 #### B、状态可变性
 
+对于函数是否会修改合约状态，我们可以用状态可变性来修饰。
+
+函数状态可变性有四种：pure、view、payable、未标记状态。
+
+函数声明时必须设置正确的状态可变性，否则无法通过编译。
+
+例如下面的加法函数，它的状态可变性是pure：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity^0.8.0;
+
+contract Add{
+	function add(uint a,uint b)public pure returns(uint){
+		uint c = a + b;
+		return c;
+	}
+}
+```
+
+##### 1、pure状态可变性
+
+称为纯函数，指函数不会读取和修改合约的状态。也就是说，pure函数不会读取和修改链上数据。例如：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract Purehanshu{
+	function sum()public pure returns(uint){
+		uint a = 1;
+		uint b = 2;
+		return a + b;
+	}
+}
+```
+
+上述合约中sum函数状态可变性设置为pure，因为函数中只使用了局部变量a、b，没有使用任何状态变量。
+
+如果函数中存在着以下语句，则被视为读取了状态数据，就不能使用 `pure` ，否则无法通过编译。
+
+- 读取状态变量
+- 访问 `<address>.balance`
+- 访问任何区块、交易、msg等全局变量
+- 调用了任何不是纯函数的函数
+- 使用包含特定操作码的内联汇编
+
+##### 2、view状态可变性
+
+被称为视图函数，指函数会读取合约状态，但不会进行修改。换言之，view会读取链上数据，但不会改变链上数据，例如：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract viewhanshu{
+	uint a = 3;
+	uint b = 6;
+	function add()public view returns(uint){//这个地方如果你换成pure就会报错，因为pure不能读取状态变量
+		return a * b;
+	}
+}
+```
+
+上面合约中add函数状态可变性为view，因为它读取了状态变量a和b的值，但并没有修改。
+
+如果函数中存在以下语句，则被视为修改了状态数据，就不能使用可见性view。
+
+- 修改状态变量
+- 触发事件
+- 创建其它合约
+- 使用了自毁函数 `selfdestruct`
+- 调用发送以太币
+- 调用任何不是 `view` 或 `pure` 的函数
+- 使用了底层调用
+- 使用包含特定操作码的内联汇编
+
+##### 3、未标记状态可变性
+
+如果一个函数定义中没标记任何状态可变性，也就是既没标pure也没标view，就意味着这个函数要改变状态的。
+
+比如，修改合约的状态变量或向其他合约发送交易等，例如：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract weibiaoji{
+	uint a = 1;
+	function setA(uint _a)public{
+		a = _a;//重新设置了状态变量a的值
+	}
+	function sum(uint b)public view returns(uint){
+		return a + b;
+	}
+}
+```
+
+上面的合约中setA函数修改了a的值，所以不能被标记为view或者pure。
+
+##### 4、payable状态可变性
+
+一个函数状态可变性为payable，就表示它可以接收以太币，这些以太币是由调用者在调用函数时支付的。因为payable函数接收了以太币，所以它是改变了合约状态的。
+
+payable有什么应用场景？比如在一个竞猜游戏的合约中，它的投注函数就要支付一定以太币，因此需要声明为payable。
+
+如果没有指定payable，那么调用这个函数就不能支付以太币，否则会报错。例如：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract BuyPayable{
+	//标记函数标记为payable，表示它可以接收以太币
+	function stake(uint teamID)public payable{
+	//……
+	}
+}
+```
+
+##### 5、状态可变性的作用
+
+```
+安全性
+通过将函数状态可变性明确定义为view、pure、payable，或者默认的未标记状态可变性，可以在编译时对函数行为进行验证。
+这可以帮助开发者避免不经意间修改合约状态或访问未经授权的外部合约，从而减少潜在安全漏洞。
+
+可靠性
+通过明确函数的状态可变性，合约的使用者可以更好理解和预测函数的行为。
+这有助于避免意外的副作用和错误的结果。像view、pure修饰的函数在调用时不会产生副作用，因此可以安全被其它函数调用，或者并行执行，提高了合约的可靠性。
+
+互操作性
+通过标记函数的可变性，可以提供给其它合约和工具有关函数的重要信息。
+例如，payable函数可以接收以太币作为支付，使其可与其他合约进行交互，并支持支付功能。
+这种明确的标记有助于确保合约之间的互操作性，并促进合约生态系统的发展。
+```
+
+##### 6、状态可变性与Gas
+
+为了防止滥用区块链，以太坊规定，对于改变链上的状态的操作，需要支付一定价值的 gas 费。
+
+因为改变了链上的状态，就需要将这些改变同步到区块链的全部节点，达成全网共识，保证数据一致，这个成本是非常高的。
+
+而对于不改变链上状态的操作，只需要在接入节点上完成，无需全网进行数据同步，这个成本就很低，因此无需付费。
+
+正是基于以上原因，调用 `view` 、`pure` 函数，无需支付 gas，而调用非 `view` 、`pure` 函数就需要支付一定的 gas。
+
+所以，我们在设计合约的时候，为了节约成本，减少支付 gas，就应该仔细划分函数的范围，尽量使用 `view` 、`pure` 函数。
+
 
 
 
