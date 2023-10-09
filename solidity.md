@@ -689,7 +689,7 @@ contract VarDefault{
 }
 ```
 
-##### 2、符合类型的默认值
+##### 2、复合类型的默认值
 
 solidity中有些类型是复合类型，也就是由多个基本类型组合而成，比如结构体`struct`。
 
@@ -703,7 +703,7 @@ struct book{
 
 复合类型的默认值是由每一个数据项的默认值组成。
 
-我们可以使用上面的符合类型`book`去声明一个变量`mybook`
+我们可以使用上面的复合类型`book`去声明一个变量`mybook`
 
 ```solidity
 //SPDX-License-Identifier:MIT
@@ -773,7 +773,7 @@ contract changshu{
 }
 ```
 
-##### 1、constant和iimmutable的区别
+##### 1、constant和immutable的区别
 
 两者的区别表现在下面两方面：
 
@@ -1671,7 +1671,308 @@ if (A == address(0)){
 }
 ```
 
-##### 2、asset语句
+##### 2、asset语句（早期solidity版本遗留，不建议使用）
+
+asset语句行为和require类似，常用于捕捉合约内部编程错误和错误情况。
+
+如果捕捉到异常就会中止当前函数执行，并回滚所有的状态改变。
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity^0.8.0;
+
+contract AssertValue{
+	function chufa(uint beichushu,uint chushu)public pure returns(uint){
+		assert(chushu != 0);//确保除数不为零
+		return beichushu/chushu;
+	}
+}
+```
+
+##### 3、require和assert区别
+
+require和assert区别如下：
+
+1. `require` 和 `assert` 参数不同，`require` 可以带有一个说明原因的参数，`assert` 没有这个参数。
+2. `require` 通常用于检查外部输入是否满足要求，而 `assert` 用于捕捉内部编程错误和异常情况。
+3. `require` 通常位于函数首部来检查参数，`assert` 则通常位于函数内部。
+4. `assert` 是 Solidity 早期版本遗留下来的函数，不再建议使用，最好使用 `require` 和 `revert` 代替。
+
+
+
+### 五、solidity复合类型
+
+#### A、数组
+
+数组是一个用于储存相同类型元素的数据结构。
+
+##### 1、固定长度数组
+
+在声明时要指定数组长度，并这个长度在编译时就确定了，无法更改。
+
+语法如下：
+
+```solidity
+type_name arrayName[length];
+```
+
+其中长度必须是大于0的整数。如果要声明一个uint类型的长度为10的数组：book，则如下所示：
+
+```solidity
+uint book[10]
+```
+
+初始化一个固定长度数组，可以用如下的代码：
+
+```solidity
+uint book[3] = [uint(1),2,3];//创建一个book的数组并定义长度和数组内的元素
+book[2] = 5;//因为数组从左到右是从0开始数的，第2个元素就是3，这里是将book数组中第三个元素赋值为5
+```
+
+而且我们也可以通过索引的方式来访问数组中的元素，如下：
+
+```solidity
+uint book3 = book[2];//我们通过索引的方式将数组中第三个元素以book3的变量名来进行访问
+```
+
+下面是一个完整的代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract GuDinValue{
+	uint[3] book = [uint(1),2,3];
+	function Hello()external returns(uint length,uint [3] memory array){
+		//获取第三个元素的值
+		uint A = book[2];
+		book[2] = A * 2;//将原来第三个元素乘2获得新的第三个元素值并将其赋值
+		return(book.length,book);
+	}
+}
+```
+
+之后运行程序，运行函数，返回结果：数组长度为3，数组元素为1，2，6。
+
+##### 2、动态长度数组
+
+动态长度数组相比固定长度数组，就是长度可以改变。
+
+声明一个动态长度数组只需指定元素类型，不用指定数量，语法如下：
+
+```solidity
+type_name arrayName[];
+```
+
+动态长度数组初始化后是长度为0的空数组，可以用**push**方法，在数组末尾追加一个元素，也可以用**pop**方法删掉数组末尾一个元素。
+
+其中push用法有两种，一种带参数push(x)，第二种不带参数push()，但不带参数就会在数组末尾添加一个默认值的元素。
+
+下面是一个完整的示例代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract DonTaiValue{
+	uint[] book = [uint(1),2,3];
+	function Hello()external returns(uint length,uint[] memory array){
+		book.push[6];
+		book.push[];//增添三个元素
+		book.push[4];
+		book.pop();//删除数组中最后一个元素
+		return (book.length,book);
+	}
+}
+```
+
+##### 3、new、delete操作
+
+我们可以用new关键字来动态创建一个数组，具体代码示范如下：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract NewValue{
+	function newArray()external pure returns(uint[] memory){
+		uint[] memory arr = new uint[](3);//新建一个长度为3元素值都是默认值的arr数组
+		arr[0] = 1;//将arr数组中第一个元素赋值为1
+		return arr;
+	}
+}
+```
+
+通过new关键字创建的数组是一个动态长度数组，无法一次性进行赋值，只能逐一对其中元素进行赋予初值。
+
+另外还有**delete**操作符可以对变量值重新初始化，前面说过的。
+
+delete arr[i]是将第i个元素恢复为默认值，不是删除该元素！
+
+```solidity
+uint[] book = [uint(1),2,3];
+delete book[0];//将book数组中第一个元素从1恢复到默认值0
+```
+
+
+
+#### B、字节和字符串
+
+字节型是solidity中一种重要的数据类型。用于表示特定长度的字节序列，本质上是一个字节数组。
+
+##### 1、固定长度字节型
+
+按长度分为32种小类，使用bytes1、bytes2直到bytes32表示，固定长度字节型的变量声明如下：
+
+```solidity
+bytes1 myBytes1 = 0x12;//单个字节
+bytes2 myBytes2 = 0x1234;//两个字节
+bytes32 myBytes32 = 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef;// 32个字节
+```
+
+对于固定长度字节型的变量使用方法和固定长度数组基本相同。
+
+下面是一个完整的示例代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract GuDinBytes{
+	function helloBytes()external pure returns(uint,bytes2,bytes1){
+		bytes2 myBytes = 0x1212;//声明固定长度字节型变量为2
+		bytes1 b = myBytes[0];//读取单个字节的值
+		myBytes = 0x3456;//设置整个字节型变量的值
+		return(myBytes.length,myBytes,b);
+	}
+}
+```
+
+##### 2、动态长度字节型
+
+其变量使用方法和动态长度数组类似。
+
+下面是个完整的示例代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract DongTaiBytes{
+	function helloBytes()external pure returns(uint,bytes memory){
+		bytes memory myBytes = new bytes(2);//创建动态长度字节型变量
+		myBytes[0] = 0x12;//设置单个字节的值
+		myBytes[1] = 0x34;
+		return(myBytes.length,myBytes);
+	}
+}
+```
+
+最后运行代码，返回值是：2，0x1234。
+
+##### 3、字符串
+
+字符串是用来储存文本数据的类型。字符值用单引号或双引号来包括，类型用string表示。
+
+```solidity
+string public myString = "Hello World";
+```
+
+字符串与固定长度字节数组非常类似，它的值在声明后就不能变。
+
+如果想对字符串中包含的字符进行操作，通常会将它转换为bytes类型。
+
+solidity提供了字节数组bytes与字符串string之间的内置转换。
+
+①将bytes转换成string
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract StringConvertor{
+	function bytesToString()external pure returns(string memory){
+		bytes memory myBytes = new bytes(2);
+		myBytes[0] = 'o';
+		myBytes[1] = 'k';
+		return string(myBytes);
+	}
+}
+```
+
+②将string转换成bytes
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract bytesConvertor{
+	function bytesToString()external pure returns(bytes memory){
+		string memory myString = "Hello World";
+		return bytes(myString);
+	}
+}
+```
+
+
+
+#### C、结构体
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
