@@ -1419,6 +1419,266 @@ uint value = status==1?100:200;
 
 Solidity 支持三种条件语句：**if** 语句、**if...else**语句、**if...else if**语句。
 
+##### 1、if语句
+
+语法如下：
+
+```solidity
+if (condition){
+	//如果条件condition为true，则允许运行这里的代码，否则跳过这段代码
+}
+```
+
+下面是if语句的示例代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract ConditionIf{
+	function transfer(uint amount)public pure returns(bool){
+	if(amount == 0){
+		return false;//如果转账金额amount等于0则返回false
+		}
+	return true;
+	}
+}
+```
+
+##### 2、if…else语句
+
+语法如下：
+
+```solidity
+if (confition){
+	//如果条件condition为true，执行这里的代码
+}else{
+	//如果条件condition为false，就执行这里的代码
+}
+```
+
+下面是if...else语句的示例代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract ConditionIfElse{
+	function transfer(uint amount)public pure returns(bool){
+		if(amount == 0){
+			return false;
+		}else{
+			return true;
+		}
+	}
+}
+```
+
+##### 3、if...else if...语句
+
+if...else if...语法如下：
+
+```solidity
+if(condition1){
+	//如果condition1为true则执行这里的代码
+}else if(condition2){
+	//如果condition1为false，condition2为true，就执行这里的代码
+}else{
+	//以上条件都不满足就执行这里的代码
+}
+```
+
+下面是if...else if...语句的示例代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract ConditionIfElseIf{
+	function test(uint status)public pure returns(int){
+		if(status == 1){
+			return 100;
+		}else if(status == 2){
+			return 200;
+		}else{
+			return 0;
+		}
+	}
+}
+```
+
+
+
+#### C、循环语句
+
+Solidity 提供了循环语句，用于在合约中重复执行特定的代码块。
+
+Solidity 支持 3 种循环语句：**while** 语句、**do...while** 语句、**for** 语句。
+
+另外还提供了两个循环控制语句：**break**、**continue** 语句。
+
+##### 1、while循环
+
+while循环语法如下：
+
+```solidity
+while(condition){
+	//如果条件condition为true，就循环执行下面的代码
+	...
+}
+```
+
+下面是while语句的示例代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract ValueWhile{
+	function sum()public view returns(uint){
+		uint result = 0;
+		uint i = 1;
+		while (result <= 10){
+			result = result + i;
+			i ++ ;
+		}
+		return result;
+	}
+}
+```
+
+##### 2、do...while循环语句
+
+do...while语句语法如下：
+
+```solidity
+do{
+	//循环执行以下代码
+	...
+}while(condition);//如果条件condition为true就继续执行循环
+```
+
+下面是do...while语句的示例代码
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity^0.8.0;
+
+contract ValueDoWhile{
+	function sum()public pure returns(int){
+		int result = 0;
+		int i = 1;
+		do{
+			result = result + i;
+			i++;
+		}while(i <= 10);
+		return result;
+	}
+}
+```
+
+##### 3、for循环
+
+for语句语法如下：
+
+```solidity
+for(初始化；测试条件；迭代语句){
+	//如果测试条件为true，就循环执行下面代码，重复执行直到条件为false为止
+	...
+}
+```
+
+for语句的示例代码如下：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract ValueFor{
+	function sum()public pure returns(uint){
+		uint result = 0;
+		for(uint i = 1;i<=10;i++){
+			result = result + i;
+		}
+		return result;
+	}
+}
+```
+
+##### 4、break语句
+
+break控制语句能推出当前循环语句，并继续执行后面代码。
+
+**在嵌套的多层循环语句中，break只会退出当前循环。**
+
+```solidity
+for(uint i = 1;i <= 10;i++){
+	result = result + i;
+	if (i == 5){
+		break;
+	}
+}
+```
+
+##### 5、continue语句
+
+和break语句一样，continue语句也是一种控制语句，用于在循环中跳过当前迭代的**剩余**代码，并继续进行下一次迭代。
+
+```solidity
+for(uint i = 1;i <= 10;i++){
+	result = result + i;
+	if (i == 5){
+		continue
+	}
+}
+```
+
+
+
+#### D、断言语句
+
+断言语句用于在合约执行过程中进行条件检查和错误处理。
+
+##### 1、require
+
+用于检查函数执行先决条件，也就是说确保满足特定条件后才能继续执行函数。
+
+如果条件不满足的话会中止当前函数的执行，并回滚所有的状态改变。
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
+
+contract AssetRequire{
+	function transfer(address A,uint amount)public pure{
+		require(A != address(0),"address is zero");
+		require(amount > 0,"amount is zero");
+	}
+}
+```
+
+另外，require的功能完全可以用revert来代替，比如下面这句：
+
+```solidity
+require(A != address(0),"address is zero");
+```
+
+这句完全可以用revert语句来代替，如下：
+
+```solidity
+if (A == address(0)){
+	revert("address is zero");
+}
+```
+
+##### 2、asset语句
+
+
+
+
+
+
+
 
 
 
