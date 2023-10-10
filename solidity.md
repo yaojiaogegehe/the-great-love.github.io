@@ -2002,6 +2002,110 @@ contract StructInit{
 
 
 
+#### D、映射mapping
+
+用于以键-值对的形式存储数据，它的作用是提供高效键值存储和查找功能类似于python中的字典。
+
+##### 1、定义
+
+定义一个映射类型使用`mapping`关键字，语法如下：
+
+```solidity
+mapping(key_type => value_type)
+```
+
+`mapping`类型是将一个键（key）映射到一个值（value）。
+
+其中：key_type可以是任何基本数据类型（整型、地址型、布尔型、枚举型等），以及bytes和string，但是部分引用类型或复杂对象不允许使用，比如动态数组、结构体、映射等。
+
+value_type可以是任何数据类型。
+
+下面是示范如何声明一个mapping类型的变量：
+
+```solidity
+struct Mystruct{uint value;}
+
+mapping(address => uint)a;
+mapping(string => bool[]) b; // 正确
+mapping(int => MyStruct) c; // 正确
+mapping(address => mapping(address => uint)) d; // 正确
+
+// mapping(uint[] => uint) public e;  // 错误
+// mapping(MyStruct => addrss) public f; // 错误
+// mapping(mapping(string=>int)) => uint) g; // 错误
+```
+
+##### 2、使用方法
+
+在智能合约中，`mapping` 类型的使用非常普遍。比如，在 ERC20 代币合约中，经常会使用 `mapping` 类型的变量作为内部账本，用来记录每一个钱包地址拥有的代币余额。
+
+比如，我们模拟一个稳定币 `USDT` 的合约：
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract USDT {
+  mapping(address => uint256) balances; // 保存所有持有 USDT 账户的余额
+  
+  // 构造函数，部署合约时自动调用
+  constructor() {
+    balances[msg.sender] = 100; // 初始设定合约部署者的账户余额为 100 USDT
+  }
+
+  // 查询某一个账户的USDT余额
+  function balanceOf(address account) public view returns(uint256) {
+    return balances[account];
+  }
+}
+```
+
+在这个合约中，首先定义了一个保存所有持有 `USDT` 账户余额的 `mapping` 类型的变量 balances，用来作为一个内部账本。
+
+##### 3. 优缺点
+
+优点
+
+`mapping` 可以用来存储数据集，并且提供了高效的键值存储和查找功能。通过使用 mapping，可以根据键快速定位内部存储的特定元素。
+
+我们知道，数组也可以用来存储数据集，但是在数组里面查找特定元素就必须通过循环语句，通过遍历整个数组进行匹配，效率非常低。
+
+缺点
+
+`mapping` 无法直接遍历。你不能像使用 `for` 循环那样遍历 `mapping` 中的键值对，它也没有提供获取全部 key 或者 value 的功能。因此，在合约中遍历或迭代 `mapping` 类型的数据时，通常需要设计其他数据结构来辅助实现。
+
+
+
+### 六、solidity面向对象
+
+#### A、合约继承
+
+封装、继承和多态是面向对象编程的三大特性。Solidity 作为一种面向对象的编程语言，它支持合约的继承。
+
+合约继承是指一个智能合约从另一个智能合约中继承功能和属性，前者称为子合约，后者称为父合约。
+
+通过合约继承，子合约能够重用父合约中已经定义的数据结构和代码逻辑，从而减少代码冗余，提高代码的可复用性。
+
+##### 1、语法
+
+子合约通过`is`来继承父合约：
+
+```solidity
+contract ziheyue is fuheyue{
+	...//其中前面是子合约，后面是父合约
+}
+```
+
+上面的子合约继承了父合约的状态变量和函数。并根据实际需要，覆盖或扩展这些继承的部分。
+
+下面是一个完整的示例代码：
+
+
+
+
+
+
+
 
 
 
