@@ -1918,13 +1918,87 @@ contract bytesConvertor{
 
 #### C、结构体
 
+结构体是一种用户自定义的数据类型，能组合多个不同类型的变量成员来创建一个复合类型。
+
+例如一本书由价格，书名，作者等信息组成，那么我们可以定义一个结构体来表示这本书。
+
+##### 1、定义
+
+结构体`struct`语法如下：
+
+```solidity
+struct struct_name{
+	type1 type_name_1;
+	type2 type_name_2;
+	...
+}
+```
+
+其中struct_name是结构体名称，可以自定义，typeN是结构体成员中的数据类型，type_name_N是成员的数据名称，也是可以自定义的。
+
+下面我们就来定义上面所说的一本书的结构体：
+
+```solidity
+struct book{
+	uint price;
+	string name;
+	string author;
+}
+```
+
+##### 2、使用方法
+
+对于创建的结构体，我们要访问其中的成员需要使用访问成员操作符（.）。
+
+下面是一个完整的示例代码：
+
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
 
 
+contract StructAccess{
+	struct Book{
+		uint price;
+		string name;
+		string author;
+	}
+	Book book; //声明一个book变量来储存结构体
+	function setBook()public {
+		book.price = 25;
+		book.name = "guzhenren";
+		book.author = "guzhenren";
+	}
+	function print()public view returns(uint,string memory){
+		return(book.price,book.name);
+	}
+}
+```
 
+##### 3、初始化方式
 
+分为三种：按字段顺序初始化、按字段名称初始化、按默认值初始化。下面是一个完整的示例代码：
 
+```solidity
+//SPDX-License-Identifier:MIT
+pragma solidity ^0.8.0;
 
-
+contract StructInit{
+	struct Book{
+		uint price;
+		string name;
+		string author;}
+	function getBook()public pure returns(Book memory,Book memory,Book memory){
+		Book memory book1 = Book(25,"guzhenren","guzhenren");//按字段顺序初始化
+		Book memory book2 = Book({price:25,name:"guzhenren",author:"guzhenren"});
+		Book memory book3;
+		book3.price = 25;
+		book3.name = "guzhenren";
+		book3.author = "guzhenren";
+		return(book1,book2,book3);
+	}
+}
+```
 
 
 
